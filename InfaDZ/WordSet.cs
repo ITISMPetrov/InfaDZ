@@ -18,46 +18,46 @@ namespace InfaDZ
                 AddLast(e);
         }
 
-        public WordSet(WordSet w1, WordSet w2)
+        public WordSet(WordSet wrd1, WordSet wrd2)
         {
-            if (!w1.IsOrdered() || !w2.IsOrdered())
+            if (!wrd1.IsOrdered() || !wrd2.IsOrdered())
                 throw new Exception("Список не упорядочен");
 
-            var el1 = w1.First;
-            var el2 = w2.First;
-            var l3 = new WordSet();
+            var el1 = wrd1.First;
+            var el2 = wrd2.First;
+            var wrd = new WordSet();
 
             while (el1 != null && el2 != null)
             {
                 if (el1.Info.CompareTo(el2.Info) < 0)
                 {
-                    l3.AddLast(el1.Info);
+                    wrd.AddLast(el1.Info);
                     el1 = el1.Next;
                 }
                 else
                 {
-                    l3.AddLast(el2.Info);
+                    wrd.AddLast(el2.Info);
                     el2 = el2.Next;
                 }
             }
             if (el1 == null)
                 while (el2 != null)
                 {
-                    l3.AddLast(el2.Info);
+                    wrd.AddLast(el2.Info);
                     el2 = el2.Next;
                 }
             else
                 while (el1 != null)
                 {
-                    l3.AddLast(el1.Info);
+                    wrd.AddLast(el1.Info);
                     el1 = el1.Next;
                 }
-            First = l3.First;
+            First = wrd.First;
         }
 
-        public void Out(string fileName)
+        public void Out(string name)
         {
-            File.WriteAllText(fileName, this.ToString());
+            File.WriteAllText(name, ToString());
         }
 
         public void Insert(string word)
@@ -120,23 +120,30 @@ namespace InfaDZ
 
         public WordSet[] VowelDivide()
         {
-            var vovel = ("аеёиоуыэюя" + "аеёиоуыэюя".ToUpper()).ToCharArray();
-            var consonant = ("бвгджзйклмнпрстфхцчшщъь" + "бвгджзйклмнпрстфхцчшщъь".ToUpper()).ToCharArray();
+            var vovel = ("аеёиоуыэюяАЕЁИОУЫЭЮЯ").ToCharArray();
 
-            var vovelWordSet = new WordSet();
-            var consonantWordSet = new WordSet();
+            var vWordSet = new WordSet();
+            var cWordSet = new WordSet();
 
             var el = First;
             while (el != null)
             {
-                if (IsLetterContainedInArray(el.Info[0], vovel))
-                    vovelWordSet.AddLast(el.Info);
-                else
-                    consonantWordSet.AddLast(el.Info);
+                for (int i = 0; i < vovel.Length; i++)
+                    if (vovel[i] == el.Info[0])
+                    {
+                        vWordSet.AddLast(el.Info);
+                        break;
+                    }
+                    else
+                    {
+                        cWordSet.AddLast(el.Info);
+                        break;
+                    }
+
                 el = el.Next;
             }
 
-            return new WordSet[] { consonantWordSet, vovelWordSet };
+            return new WordSet[] { cWordSet, vWordSet };
         }
 
         public void RemovePalindrome()
@@ -161,28 +168,6 @@ namespace InfaDZ
             string second = temp.Substring(0, temp.Length / 2);
 
             return first.Equals(second);
-        }
-
-        public override string ToString()
-        {
-            if (First == null)
-                return "First is null".ToString();
-            StringBuilder sb = new StringBuilder();
-            var el = First;
-            while (el != null)
-            {
-                sb.Append($"{el.Info} ");
-                el = el.Next;
-            }
-            return sb.ToString();
-        }
-
-        public bool IsLetterContainedInArray(char letter, char[] array)
-        {
-            for (int i = 0; i < array.Length; i++)
-                if (array[i] == letter)
-                    return true;
-            return false;
         }
 
         public bool IsWordSetContainsWord(string word)
